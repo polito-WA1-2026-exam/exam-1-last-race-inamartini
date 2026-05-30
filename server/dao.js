@@ -31,8 +31,9 @@ export const getUser = (username, password) => {
                     if (err) reject(err);
                     if(!crypto.timingSafeEqual(Buffer.from(row.password, "hex"), password))
                         resolve(false);
-                    else
+                    else {
                         resolve(user);
+                    }
                 });
             }
         });
