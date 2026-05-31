@@ -233,11 +233,13 @@ app.post('/api/games', async (req, res) => {
 // POST /api/games/:id/execute — validate route and apply events
 // Body: { route: [station_id, station_id, ...] }
 app.post('/api/games/:id/execute', async (req, res) => {
+  console.log('Execute body:', req.body)        // debug
+  console.log('Game id:', req.params.id)
   try {
     const game = await getGame(req.params.id)
     if (!game) return res.status(404).json({ error: 'Game not found' })
     if (game.user_id !== req.user.user_id) return res.status(403).json({ error: 'Forbidden' })
-    if (game.status !== 'active') return res.status(400).json({ error: 'Game already finished' })
+    if (game.status !== 'planning') return res.status(400).json({ error: 'Game already finished' })
 
     const { route } = req.body  // array of station_ids in order
     const network = await getNetwork()

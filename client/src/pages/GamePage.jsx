@@ -39,6 +39,7 @@ function GamePage({ user }) {
     const handleSubmitRoute = async () => {
         setError('')
         setLoading(true)
+        console.log('Submitting route:', route)  // debug
         try {
             const res = await executeGame(game.game_id, route)
             setResult(res)
@@ -88,7 +89,7 @@ function SetupPhase({ onReady, loading }) {
                 src={metroMap}
                 alt="Metro map with connecting lines"
                 style={{
-                    maxWidth: "80%",
+                    maxWidth: "100%",
                     height: "auto"
                 }}
             />
@@ -198,7 +199,7 @@ function ExecutionPhase({ result, network, onDone }) {
     if (!result.valid) {
         return (
             <div>
-                <h1>Invalid Route ❌</h1>
+                <h1>Invalid Route</h1>
                 <p>Your route was invalid or incomplete. You lose all 20 coins.</p>
                 <p className="score-display">Final score: <strong>0</strong> coins</p>
                 <button className="btn btn-primary" onClick={onDone}>See Result</button>

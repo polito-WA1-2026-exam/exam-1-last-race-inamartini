@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS gameAction;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS segment;
-DROP TABLE IF EXISTS line_station;
+DROP TABLE IF EXISTS lineStation;
 DROP TABLE IF EXISTS line;
 DROP TABLE IF EXISTS station;
 DROP TABLE IF EXISTS user;
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS line (
                                     color     TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS line_station (
+CREATE TABLE IF NOT EXISTS lineStation (
                                             line_id       INTEGER NOT NULL,
                                             station_id    INTEGER NOT NULL,
                                             station_order INTEGER NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS game (
                                     user_id                INTEGER NOT NULL,
                                     start_station_id       INTEGER NOT NULL,
                                     destination_station_id INTEGER NOT NULL,
-                                    status                 TEXT    NOT NULL DEFAULT 'active',
+                                    status                 TEXT    NOT NULL DEFAULT 'planning',
                                     created_at             TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                     score                  INTEGER NOT NULL DEFAULT 20,
 
@@ -91,9 +91,9 @@ INSERT INTO station (station_name) VALUES
                                        ('Fountain'),         -- 2
                                        ('Museum'),           -- 3
                                        ('Shopping Centre'),  -- 4
-                                       ('Industry'),         -- 5
-                                       ('Tivoli'),           -- 6
-                                       ('Port'),             -- 7
+                                       ('River Side'),         -- 5
+                                       ('Aquarium'),           -- 6
+                                       ('Old Town'),             -- 7
                                        ('Stadium'),          -- 8
                                        ('University'),       -- 9
                                        ('Park'),             -- 10
@@ -108,20 +108,20 @@ INSERT INTO line (line_name, color) VALUES
                                         ('Orange Line', 'orange');  -- 4
 
 -- LINE STATIONS
--- Blue:   Theatre(12) -> Park(10) -> Central Station(11) -> Shopping Centre(4) -> Industry(5) -> Tivoli(6)
-INSERT INTO line_station (line_id, station_id, station_order) VALUES
+-- Blue:   Theatre(12) -> Park(10) -> Central Station(11) -> Shopping Centre(4) -> River Side(5) -> Aquarium(6)
+INSERT INTO lineStation (line_id, station_id, station_order) VALUES
                                                                   (1, 12, 1), (1, 10, 2), (1, 11, 3), (1, 4, 4), (1, 5, 5), (1, 6, 6);
 
--- Red:    Park(10) -> Central Station(11) -> Stadium(8) -> Port(7)
-INSERT INTO line_station (line_id, station_id, station_order) VALUES
+-- Red:    Park(10) -> Central Station(11) -> Stadium(8) -> Old Town(7)
+INSERT INTO lineStation (line_id, station_id, station_order) VALUES
                                                                   (2, 10, 1), (2, 11, 2), (2, 8, 3), (2, 7, 4);
 
 -- Green:  University(9) -> Park(10) -> Museum(3) -> Shopping Centre(4)
-INSERT INTO line_station (line_id, station_id, station_order) VALUES
+INSERT INTO lineStation (line_id, station_id, station_order) VALUES
                                                                   (3, 9, 1), (3, 10, 2), (3, 3, 3), (3, 4, 4);
 
 -- Orange: Castle(1) -> Fountain(2) -> Museum(3) -> Shopping Centre(4)
-INSERT INTO line_station (line_id, station_id, station_order) VALUES
+INSERT INTO lineStation (line_id, station_id, station_order) VALUES
                                                                   (4, 1, 1), (4, 2, 2), (4, 3, 3), (4, 4, 4);
 
 -- SEGMENTS
@@ -129,15 +129,15 @@ INSERT INTO segment (station_1_id, station_2_id) VALUES
                                                      (1,  2),   -- Castle       <-> Fountain
                                                      (2,  3),   -- Fountain     <-> Museum
                                                      (3,  4),   -- Museum       <-> Shopping Centre
-                                                     (4,  5),   -- Shopping Centre <-> Industry
-                                                     (5,  6),   -- Industry     <-> Tivoli
+                                                     (4,  5),   -- Shopping Centre <-> River Side
+                                                     (5,  6),   -- River Side     <-> Aquarium
                                                      (3,  10),  -- Museum       <-> Park
                                                      (9,  10),  -- University   <-> Park
                                                      (10, 11),  -- Park         <-> Central Station
                                                      (11, 4),   -- Central Station <-> Shopping Centre
                                                      (12, 10),  -- Theatre      <-> Park
                                                      (11, 8),   -- Central Station <-> Stadium
-                                                     (8,  7);   -- Stadium      <-> Port
+                                                     (8,  7);   -- Stadium      <-> Old Town
 
 -- EVENTS
 INSERT INTO event (event_description, effect) VALUES
@@ -170,9 +170,9 @@ INSERT INTO user (username, email, password, salt) VALUES
 
 -- TEST GAMES
 INSERT INTO game (user_id, start_station_id, destination_station_id, status, score) VALUES
-                                                                                        (1, 12, 7,  'active',   20),  -- User1: Theatre -> Port
-                                                                                        (2, 1,  6,  'active',   20),  -- User2:   Castle  -> Tivoli
-                                                                                        (1, 9,  6,  'finished', 17);  -- User1: University -> Tivoli (finished)
+                                                                                        (1, 12, 7,  'finished',   20),  -- User1: Theatre -> Old Town
+                                                                                        (2, 1,  6,  'finished',   20),  -- User2: Castle  -> Aquarium
+                                                                                        (1, 9,  6,  'finished', 17);    -- User1: University -> Aquarium
 
 -- TEST GAME ACTIONS
 INSERT INTO gameAction (game_id, step_number, from_station_id, to_station_id, event_id, remaining_coins) VALUES
@@ -182,4 +182,4 @@ INSERT INTO gameAction (game_id, step_number, from_station_id, to_station_id, ev
                                                                                                              (3, 1, 9,  10, 8,    22),  -- University -> Park,          Free coffee
                                                                                                              (3, 2, 10, 3,  2,    20),  -- Park -> Museum,              Wrong platform
                                                                                                              (3, 3, 3,  4,  10,   22),  -- Museum -> Shopping Centre,   Nice view
-                                                                                                             (3, 4, 4,  5,  5,    19);  -- Shopping Centre -> Industry, Full metro
+                                                                                                             (3, 4, 4,  5,  5,    19);  -- Shopping Centre -> River Side, Full metro

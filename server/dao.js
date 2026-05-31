@@ -73,14 +73,14 @@ export const getNetwork = () => {
             db.all(`
         SELECT l.line_id, l.line_name, l.color, ls.station_id, ls.station_order
         FROM line l
-        JOIN line_station ls ON l.line_id = ls.line_id
+        JOIN lineStation ls ON l.line_id = ls.line_id
         ORDER BY l.line_id, ls.station_order
       `, [], (err, rows) => err ? rej(err) : res(rows))
         })
 
         Promise.all([stations, segments, lines])
             .then(([stationRows, segmentRows, lineRows]) => {
-                // group line_station rows into lines with a stations array
+                // group lineStation rows into lines with a stations array
                 const linesMap = {}
                 for (const row of lineRows) {
                     if (!linesMap[row.line_id]) {
@@ -111,7 +111,7 @@ export const createGame = (user_id, start_station_id, destination_station_id) =>
 
 export const getGame = (game_id) => {
     return new Promise((resolve, reject) => {
-        db.get("SELECT * FROM game WHERE game_id = ?", [game_id], (err, row) => {
+        db.get("SELECT * FROM game WHERE game_id = ?", [Number(game_id)], (err, row) => {
             err ? reject(err) : resolve(row)
         })
     })
