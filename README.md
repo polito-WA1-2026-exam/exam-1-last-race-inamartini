@@ -1,5 +1,5 @@
 # Exam #1: "Last Race"
-## Student: s362518 Martini Ina
+## Student: s362518 MARTINI INA
 
 ## React Client Application Routes
 
