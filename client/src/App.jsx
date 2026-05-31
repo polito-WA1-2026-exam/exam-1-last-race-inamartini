@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RankingPage from './pages/RankingPage.jsx'
 import GamePage from './pages/GamePage.jsx'
-import GameInstructionsPage from "./pages/GameInstructionsPage.jsx";
+import InstructionsPage from "./pages/InstructionsPage.jsx";
 import Footer from './components/Footer.jsx'
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
               user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />
             } />
             <Route path="/ranking" element={<RankingPage />} />
-            <Route path="/instructions" element={<GameInstructionsPage />} />
+            <Route path="/instructions" element={<InstructionsPage />} />
             <Route path="/game" element={
               user ? <GamePage user={user} /> : <Navigate to="/login" />
             } />

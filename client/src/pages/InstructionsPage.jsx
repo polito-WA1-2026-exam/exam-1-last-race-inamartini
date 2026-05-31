@@ -1,4 +1,4 @@
-function GameInstructionsPage({ user }) {
+function InstructionsPage({ user }) {
     return (
         <div className="page">
             <h1>Game Instructions</h1>
@@ -7,4 +7,4 @@ function GameInstructionsPage({ user }) {
     )
 }
 
-export default GameInstructionsPage
+export default InstructionsPage
