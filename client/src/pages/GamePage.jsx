@@ -1,71 +1,19 @@
 import { useState, useEffect } from 'react'
-import { getNetwork, startGame, executeGame } from '../api/API.js'
 import metroMap from "../assets/metro_with_lines.png";
 import metroMap2 from "../assets/metro.png";
+import { useGame } from '../contexts/GameContext.jsx'
 
 // phase: 'setup' | 'planning' | 'execution' | 'result'
-
-function GamePage({ user }) {
-    const [phase, setPhase]       = useState('setup')
-    const [network, setNetwork]   = useState(null)
-    const [game, setGame]         = useState(null)      // { game_id, start_station, destination_station }
-    const [route, setRoute]       = useState([])        // array of station_ids in order
-    const [result, setResult]     = useState(null)      // { valid, score, steps }
-    const [error, setError]       = useState('')
-    const [loading, setLoading]   = useState(false)
-
-    // load network on mount
-    useEffect(() => {
-        getNetwork()
-            .then(setNetwork)
-            .catch(() => setError('Could not load network.'))
-    }, [])
-
-    const handleStartPlanning = async () => {
-        setError('')
-        setLoading(true)
-        try {
-            const g = await startGame()
-            setGame(g)
-            setRoute([g.start_station.station_id])   // route begins at start
-            setPhase('planning')
-        } catch {
-            setError('Failed to start game.')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleSubmitRoute = async () => {
-        setError('')
-        setLoading(true)
-        console.log('Submitting route:', route)  // debug
-        try {
-            const res = await executeGame(game.game_id, route)
-            setResult(res)
-            setPhase('execution')
-        } catch {
-            setError('Failed to submit route.')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleRestart = () => {
-        setPhase('setup')
-        setGame(null)
-        setRoute([])
-        setResult(null)
-        setError('')
-    }
+function GamePage() {
+    const { phase, setPhase, network, game, route, setRoute, result,
+        error, loading, handleStartPlanning, handleSubmitRoute, handleRestart } = useGame()
 
     if (!network) return <div className="page"><p>Loading network…</p></div>
 
     return (
         <div className="page">
             {error && <p className="error">{error}</p>}
-
-            {phase === 'setup'     && <SetupPhase network={network} onReady={handleStartPlanning} loading={loading} />}
+            {phase === 'setup'     && <SetupPhase onReady={handleStartPlanning} loading={loading} />}
             {phase === 'planning'  && <PlanningPhase network={network} game={game} route={route} setRoute={setRoute} onSubmit={handleSubmitRoute} loading={loading} />}
             {phase === 'execution' && <ExecutionPhase result={result} network={network} onDone={() => setPhase('result')} />}
             {phase === 'result'    && <ResultPhase result={result} onRestart={handleRestart} />}

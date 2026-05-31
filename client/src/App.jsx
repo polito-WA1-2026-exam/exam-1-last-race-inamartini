@@ -7,18 +7,15 @@ import RankingPage from './pages/RankingPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import InstructionsPage from "./pages/InstructionsPage.jsx";
 import Footer from './components/Footer.jsx'
-import { getSessionUser } from './api/auth.js'
+import { useUser } from './contexts/UserContext.jsx'
+import {GameProvider} from "./contexts/GameContext.jsx";
+
 
 function App() {
-  const [user, setUser] = useState(null)  // null = not logged in
+    const { user, setUser } = useUser()
 
-    // on mount, check if there's already a valid session
-    useEffect(() => {
-        getSessionUser().then(user => setUser(user))
-    }, [])
-
-  const handleLogin = (loggedInUser) => setUser(loggedInUser)
-  const handleLogout = () => setUser(null)
+    const handleLogin  = (u) => setUser(u)
+    const handleLogout = ()  => setUser(null)
 
   return (
       <>
@@ -31,9 +28,9 @@ function App() {
             } />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/instructions" element={<InstructionsPage />} />
-            <Route path="/game" element={
-              user ? <GamePage user={user} /> : <Navigate to="/login" />
-            } />
+              <Route path="/game" element={
+                  user ? <GameProvider><GamePage /></GameProvider> : <Navigate to="/login" />
+              } />
           </Routes>
         </main>
         <Footer />
