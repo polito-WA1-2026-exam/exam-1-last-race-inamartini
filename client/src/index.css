@@ -44,6 +44,7 @@ main {
 .error   { color: #c0392b; font-size: 0.9rem; }
 .success { color: #27ae60; font-size: 0.9rem; padding: 1rem 0; }
 
+/* Footer */
 .footer {
   text-align: center;
   padding: 1.5rem;
@@ -52,3 +53,73 @@ main {
   color: #aaa;
   font-size: 0.85rem;
 }
+
+/* Game */
+.network-grid   { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+.line-card      { background: white; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #ddd; }
+.line-card p    { margin-top: 0.25rem; color: #555; font-size: 0.9rem; }
+.segment-list {
+  list-style: none;
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+  padding: 0;
+}
+
+.segment-list li {
+  width: 100%;
+}
+
+.segment-link {
+  width: 100%;
+  background: white;
+  border: 2px solid #dbe4ff;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+
+  cursor: pointer;
+  transition:
+          transform 0.15s ease,
+          background 0.15s ease,
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.segment-link:hover {
+  background: #f0f4ff;
+  border-color: #6c8cff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+}
+
+.segment-link:active {
+  transform: scale(0.98);
+}
+
+.segment-link:disabled {
+  background: #f3f3f3;
+  color: #999;
+  border-color: #ddd;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.assignment-box { background: #f0f4ff; border: 1px solid #c0d0ff; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.route-display  { background: #f9f9f9; padding: 0.75rem 1rem; border-radius: 6px; font-size: 1rem; margin: 0.5rem 0 1rem; }
+.segment-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.step-card      { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1.25rem; margin-top: 1rem; }
+.event-description { font-size: 1.1rem; margin: 0.5rem 0; }
+.positive       { color: #27ae60; font-weight: bold; }
+.negative       { color: #c0392b; font-weight: bold; }
+.score-display  { font-size: 1.5rem; margin: 1rem 0; }
+.station-destination { color: #e94560; font-weight: bold; }
