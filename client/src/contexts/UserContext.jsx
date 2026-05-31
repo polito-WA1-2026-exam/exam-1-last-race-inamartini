@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import {createContext, useState, useEffect} from 'react'
 import { getSessionUser } from '../api/auth.js'
 
 const UserContext = createContext(null)
@@ -19,4 +19,4 @@ export function UserProvider({ children }) {
     )
 }
 
-export const useUser = () => useContext(UserContext)
+export { UserContext }

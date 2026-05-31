@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import metroMap from "../assets/metro_with_lines.png";
-import metroMap2 from "../assets/metro.png";
-import { useGame } from '../contexts/GameContext.jsx'
+import { useState, useContext } from 'react'
+import metroMap from "../assets/metro_with_lines.png"
+import metroMap2 from "../assets/metro.png"
+import { GameContext } from '../contexts/GameContext.jsx'
 
-// phase: 'setup' | 'planning' | 'execution' | 'result'
 function GamePage() {
     const { phase, setPhase, network, game, route, setRoute, result,
-        error, loading, handleStartPlanning, handleSubmitRoute, handleRestart } = useGame()
+        error, loading, timeLeft,
+        handleStartPlanning, handleSubmitRoute, handleRestart } = useContext(GameContext)
 
     if (!network) return <div className="page"><p>Loading network…</p></div>
 
@@ -14,7 +14,7 @@ function GamePage() {
         <div className="page">
             {error && <p className="error">{error}</p>}
             {phase === 'setup'     && <SetupPhase onReady={handleStartPlanning} loading={loading} />}
-            {phase === 'planning'  && <PlanningPhase network={network} game={game} route={route} setRoute={setRoute} onSubmit={handleSubmitRoute} loading={loading} />}
+            {phase === 'planning'  && <PlanningPhase network={network} game={game} route={route} setRoute={setRoute} onSubmit={handleSubmitRoute} loading={loading} timeLeft={timeLeft} />}
             {phase === 'execution' && <ExecutionPhase result={result} network={network} onDone={() => setPhase('result')} />}
             {phase === 'result'    && <ResultPhase result={result} onRestart={handleRestart} />}
         </div>
@@ -47,7 +47,7 @@ function SetupPhase({ onReady, loading }) {
                 onClick={onReady}
                 disabled={loading}
             >
-                {loading ? "Starting…" : "I'm ready: Start!"}
+                {loading ? "Starting…" : "Start playing!"}
             </button>
         </div>
     )
@@ -55,7 +55,7 @@ function SetupPhase({ onReady, loading }) {
 
 // ── PLANNING ─────────────────────────────────────────────────────────────────
 
-function PlanningPhase({ network, game, route, setRoute, onSubmit, loading }) {
+function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, timeLeft }) {
     const lastStation = route[route.length - 1]
 
     const availableSegments = network.segments
@@ -68,7 +68,6 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading }) {
             setRoute(r => [...r, seg.station_1_id])
         }
         else {
-            // invalid move, but allow user to choose it
             setRoute(r => [...r, seg.station_1_id, seg.station_2_id])
         }
     }
@@ -83,6 +82,10 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading }) {
     return (
         <div>
             <h1>Plan Your Route</h1>
+
+            <div className={`timer ${timeLeft <= 10 ? 'timer-urgent' : ''}`}>
+                ⏱ {timeLeft}s remaining
+            </div>
 
             <div className="assignment-box">
                 <p>🚉 <strong>Start:</strong> {game.start_station.station_name}</p>

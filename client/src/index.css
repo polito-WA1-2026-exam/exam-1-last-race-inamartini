@@ -134,3 +134,11 @@ main {
 .negative       { color: #c0392b; font-weight: bold; }
 .score-display  { font-size: 1.5rem; margin: 1rem 0; }
 .station-destination { color: #e94560; font-weight: bold; }
+
+.timer        { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: #333; }
+.timer-urgent { color: #e94560; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}

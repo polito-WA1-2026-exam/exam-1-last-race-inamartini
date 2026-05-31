@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import {useEffect, useState} from 'react'
 import NavBar from './components/NavBar.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -7,12 +6,14 @@ import RankingPage from './pages/RankingPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import InstructionsPage from "./pages/InstructionsPage.jsx";
 import Footer from './components/Footer.jsx'
-import { useUser } from './contexts/UserContext.jsx'
-import {GameProvider} from "./contexts/GameContext.jsx";
+import { UserContext } from './contexts/UserContext.jsx'
+import { GameProvider } from "./contexts/GameContext.jsx";
+import {useContext} from "react";
 
 
 function App() {
-    const { user, setUser } = useUser()
+
+    const { user, setUser } = useContext(UserContext)
 
     const handleLogin  = (u) => setUser(u)
     const handleLogout = ()  => setUser(null)
