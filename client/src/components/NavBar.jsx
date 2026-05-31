@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { logout } from '../api/auth.js'
 
 function NavBar({ user, onLogout }) {
     const navigate = useNavigate()
 
     const handleLogout = async () => {
-        // TODO: call POST /api/sessions/logout
+        await logout()
         onLogout()
         navigate('/')
     }

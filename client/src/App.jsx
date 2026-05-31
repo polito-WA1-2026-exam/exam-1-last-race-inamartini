@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import NavBar from './components/NavBar.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -7,9 +7,15 @@ import RankingPage from './pages/RankingPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import InstructionsPage from "./pages/InstructionsPage.jsx";
 import Footer from './components/Footer.jsx'
+import { getSessionUser } from './api/auth.js'
 
 function App() {
   const [user, setUser] = useState(null)  // null = not logged in
+
+    // on mount, check if there's already a valid session
+    useEffect(() => {
+        getSessionUser().then(user => setUser(user))
+    }, [])
 
   const handleLogin = (loggedInUser) => setUser(loggedInUser)
   const handleLogout = () => setUser(null)

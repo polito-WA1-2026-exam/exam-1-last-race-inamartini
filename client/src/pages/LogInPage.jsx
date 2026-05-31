@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { login, createUser } from '../api/auth.js'
+
 
 function LoginPage({ onLogin }) {
     const [view, setView] = useState('login')   // 'login' | 'register'
@@ -35,14 +37,12 @@ function LoginForm({ onLogin, navigate }) {
         e.preventDefault()
         setError('')
         try {
-            // TODO: replace with real API call
-            // const res = await fetch('/api/sessions', { method: 'POST', ... })
-            // const user = await res.json()
-            const fakeUser = { user_id: 1, username }   // remove when API is ready
-            onLogin(fakeUser)
+            const user = await login(username, password)
+            onLogin(user)
             navigate('/')
+            // eslint-disable-next-line no-unused-vars
         } catch (err) {
-            setError('Login failed. Check your credentials.')
+            setError('Invalid username or password.')
         }
     }
 
@@ -72,12 +72,11 @@ function RegisterForm({ onDone }) {
         e.preventDefault()
         setError('')
         try {
-            // TODO: replace with real API call
-            // await fetch('/api/users', { method: 'POST', ... })
+            await createUser(username, email, password)
             setSuccess(true)
             setTimeout(onDone, 1500)
         } catch (err) {
-            setError('Registration failed.')
+            setError(err.message)
         }
     }
 
