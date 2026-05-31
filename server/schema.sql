@@ -159,9 +159,14 @@ INSERT INTO event (event_description, effect) VALUES
 
 -- TEST USERS (passwords need to be inserted via createUser in dao.js — plain text passwords can't be hashed here)
 -- Placeholder rows with fake hashes just to have data in the table for non-auth queries
+-- Test users:
+--  username: testuser, password: password123
+--  username: ina, password: password
+--  username: inamartini, password: password
 INSERT INTO user (username, email, password, salt) VALUES
-                                                       ('user1', 'user1@example.com', 'fakehash', 'fakesalt'),
-                                                       ('user2',   'user2@example.com',   'fakehash', 'fakesalt');
+                                                       ('testuser', 'test@mail.com', 'a116060bbefa02604a3f54eb37af796c', 'cd272c137e30e8aff51e34c92ca972f6'),
+                                                       ('ina', 'ina@example.com', '50c9d2b47e1ae6803c5cf2f350912793', '2ff6efe62a7063dc2035db64f784a1fc'),
+                                                       ('inamartini',   'inamartini02@gmail.com',   '50c9d2b47e1ae6803c5cf2f350912793', '2ff6efe62a7063dc2035db64f784a1fc');
 
 -- TEST GAMES
 INSERT INTO game (user_id, start_station_id, destination_station_id, status, score) VALUES

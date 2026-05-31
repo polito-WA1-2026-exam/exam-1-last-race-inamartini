@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { getUser } from "./dao.js";
+import { getUser, createUser } from './dao.js'
 
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
@@ -80,6 +80,21 @@ app.delete("/api/sessions/current", (req, res) => {
     res.end();
   });
 });
+
+
+app.post('/api/users', async (req, res) => {
+  const { username, email, password } = req.body
+  if (!username || !email || !password)
+    return res.status(400).json({ error: 'Missing fields' })
+  try {
+    const id = await createUser(username, email, password)
+    res.status(201).json({ user_id: id })
+  } catch (err) {
+    if (err.message.includes('UNIQUE'))
+      return res.status(409).json({ error: 'Username or email already taken' })
+    res.status(500).json({ error: 'Server error' })
+  }
+})
 
 
 app.use(isLoggedIn)
