@@ -25,3 +25,11 @@ export const executeGame = async (gameId, route) => {
     if (!res.ok) throw new Error('Failed to execute game')
     return res.json()
 }
+
+export const getRanking = async () => {
+    const res = await fetch(`${SERVER}/api/ranking`, {
+        credentials: 'include'
+    })
+    if (!res.ok) throw new Error('Failed to load ranking')
+    return res.json()
+}

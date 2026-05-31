@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 function HomePage({ user }) {
     return (
         <div className="page">
-            <h1>Last Race 🚇</h1>
+            <h1>Last Race</h1>
             <p>Race through the underground network to reach your destination before time runs out.</p>
             <div className="btn-container">
                 {user

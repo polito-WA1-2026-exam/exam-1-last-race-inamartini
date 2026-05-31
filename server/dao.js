@@ -143,13 +143,15 @@ export const getEvents = () => {
     })
 }
 
-export const getRanking = (user_id) => {
+export const getRanking = () => {
     return new Promise((resolve, reject) => {
         db.all(`
-            SELECT g.game_id, g.score, g.created_at
+            SELECT u.username, MAX(g.score) as best_score
             FROM game g
-            WHERE g.user_id = ? AND g.status = 'finished'
-            ORDER BY g.score DESC
-        `, [user_id], (err, rows) => err ? reject(err) : resolve(rows))
+                     JOIN user u ON g.user_id = u.user_id
+            WHERE g.status = 'finished'
+            GROUP BY g.user_id
+            ORDER BY best_score DESC
+        `, [], (err, rows) => err ? reject(err) : resolve(rows))
     })
 }

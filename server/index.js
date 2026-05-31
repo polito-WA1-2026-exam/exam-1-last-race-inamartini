@@ -165,7 +165,7 @@ app.get('/api/network', async (req, res) => {
 // everything below require the user to be logged in
 app.use(isLoggedIn)
 
-// GET /api/ranking — logged in users only, shows their own best scores
+// GET /api/ranking — logged in users only, shows the ranking of the best games played among all players
 app.get('/api/ranking', async (req, res) => {
   try {
     const ranking = await getRanking(req.user.user_id)

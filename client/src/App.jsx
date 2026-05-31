@@ -27,7 +27,9 @@ function App() {
             <Route path="/login" element={
               user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />
             } />
-            <Route path="/ranking" element={<RankingPage />} />
+              <Route path="/ranking" element={
+                  user ? <RankingPage /> : <Navigate to="/login" />
+              } />
             <Route path="/instructions" element={<InstructionsPage />} />
               <Route path="/game" element={
                   user ? <GameProvider><GamePage /></GameProvider> : <Navigate to="/login" />
