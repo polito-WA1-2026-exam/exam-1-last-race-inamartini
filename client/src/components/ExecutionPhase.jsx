@@ -8,7 +8,7 @@ function ExecutionPhase({ result, network, onDone }) {
     if (!result.valid) {
         return (
             <div>
-                <h1>Invalid Route ❌</h1>
+                <h1>Invalid Route</h1>
                 <p>Your route was invalid or incomplete. You lose all 20 coins.</p>
                 <p className="score-display">Final score: <strong>0</strong> coins</p>
                 <button className="btn btn-primary" onClick={onDone}>See Result</button>
@@ -21,7 +21,7 @@ function ExecutionPhase({ result, network, onDone }) {
 
     return (
         <div>
-            <h1>Executing Route 🚇</h1>
+            <h1>Executing Route</h1>
             <p>Step {stepIndex + 1} of {result.steps.length}</p>
 
             <div className="step-card">
@@ -31,7 +31,7 @@ function ExecutionPhase({ result, network, onDone }) {
                     <strong>{stationName(currentStep.to_station_id)}</strong>
                 </p>
                 <p className="event-description">
-                    🎲 {currentStep.event.description}{' '}
+                     {currentStep.event.description}{' '}
                     <span className={currentStep.event.effect >= 0 ? 'positive' : 'negative'}>
                         ({currentStep.event.effect >= 0 ? '+' : ''}{currentStep.event.effect} coins)
                     </span>

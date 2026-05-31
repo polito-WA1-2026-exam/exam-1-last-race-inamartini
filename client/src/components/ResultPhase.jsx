@@ -1,7 +1,7 @@
 function ResultPhase({ result, onRestart }) {
     return (
         <div>
-            <h1>Game Over 🏁</h1>
+            <h1>Game Over</h1>
             {result.valid
                 ? <p>You completed the route!</p>
                 : <p>Your route was invalid.</p>

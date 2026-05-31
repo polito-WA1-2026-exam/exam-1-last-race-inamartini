@@ -8,8 +8,9 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
             setRoute(r => [...r, seg.station_2_id])
         } else if (seg.station_2_id === lastStation) {
             setRoute(r => [...r, seg.station_1_id])
+        } else {
+            setRoute(r => [...r, seg.station_1_id, seg.station_2_id])
         }
-        // if neither end connects, do nothing
     }
 
     const removeLast = () => {
