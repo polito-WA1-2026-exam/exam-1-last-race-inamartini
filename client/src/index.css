@@ -1,9 +1,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 main {
@@ -27,6 +37,7 @@ main {
 .btn-primary:hover { background: #c73652; }
 .btn-secondary { background: transparent; color: #ccc; border: 1px solid #555; }
 .btn-secondary:hover { background: #333; }
+.btn-container { display: flex; align-items: center; gap: 1rem; margin-top: 10px; }
 
 /* Pages */
 .page { max-width: 800px; margin: 3rem auto; padding: 0 1rem; }

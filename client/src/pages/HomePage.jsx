@@ -5,10 +5,12 @@ function HomePage({ user }) {
         <div className="page">
             <h1>Last Race 🚇</h1>
             <p>Race through the underground network to reach your destination before time runs out.</p>
-            {user
-                ? <Link to="/game" className="btn btn-primary">Start a new game</Link>
-                : <Link to="/login" className="btn btn-primary">Login to play</Link>
-            }
+            <div className="btn-container">
+                {user
+                    ? <Link to="/game" className="btn btn-primary">Start a new game</Link>
+                    : <Link to="/login" className="btn btn-primary">Login to play</Link>
+                }
+            </div>
         </div>
     )
 }
