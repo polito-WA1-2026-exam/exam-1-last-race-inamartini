@@ -34,14 +34,17 @@ passport.use(new LocalStrategy(async function verify(username, password, cb) {
   return cb(null, user);
 }));
 
+// stores the whole user object in the session cookie
 passport.serializeUser(function (user, cb) {
   cb(null, user);
 });
 
+// reads it back out on each request, making it available as req.user
 passport.deserializeUser(function (user, cb) {
   return cb(null, user);
 });
 
+// guard function, will check if a user is authenticated, and return 401 if not
 const isLoggedIn = (req, res, next) => {
   if(req.isAuthenticated()) {
     return next();
@@ -57,7 +60,8 @@ app.use(session({
 }));
 app.use(passport.authenticate("session"));
 
-
+// takes the submitted route array and checks if it starts and ends at the assigned stations, that every step is
+// are a real route with a line between, and that line changes only happens at interchange stations
 function validateRoute(route, game, network) {
   if (!route || route.length < 2) return false
 
@@ -116,7 +120,7 @@ function validateRoute(route, game, network) {
 /* ROUTES */
 
 // POST /api/sessions
-// Interface sends username and password
+// Interface sends username and password, handled by passport
 app.post("/api/sessions", passport.authenticate("local"), function(req, res) {
   return res.status(201).json(req.user);
 });
@@ -138,7 +142,8 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
-
+// POST /api/users
+// register a new user
 app.post('/api/users', async (req, res) => {
   const { username, email, password } = req.body
   if (!username || !email || !password)
@@ -152,7 +157,9 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: 'Server error' })
   }
 })
-// GET /api/network — public, used in Setup phase
+
+// GET /api/network
+// fetch stations, segments and lines
 app.get('/api/network', async (req, res) => {
   try {
     const network = await getNetwork()
@@ -165,7 +172,8 @@ app.get('/api/network', async (req, res) => {
 // everything below require the user to be logged in
 app.use(isLoggedIn)
 
-// GET /api/ranking — logged in users only, shows the ranking of the best games played among all players
+// GET /api/ranking
+// logged in users only, shows the ranking of the best games played among all players
 app.get('/api/ranking', async (req, res) => {
   try {
     const ranking = await getRanking(req.user.user_id)
@@ -175,7 +183,8 @@ app.get('/api/ranking', async (req, res) => {
   }
 })
 
-// POST /api/games — start a new game, server picks start/destination
+// POST /api/games
+// start a new game, server picks start/destination
 app.post('/api/games', async (req, res) => {
   try {
     const network = await getNetwork()
@@ -230,11 +239,10 @@ app.post('/api/games', async (req, res) => {
   }
 })
 
-// POST /api/games/:id/execute — validate route and apply events
+// POST /api/games/:id/execute
+// validate route and apply events
 // Body: { route: [station_id, station_id, ...] }
 app.post('/api/games/:id/execute', async (req, res) => {
-  console.log('Execute body:', req.body)        // debug
-  console.log('Game id:', req.params.id)
   try {
     const game = await getGame(req.params.id)
     if (!game) return res.status(404).json({ error: 'Game not found' })
@@ -245,7 +253,7 @@ app.post('/api/games/:id/execute', async (req, res) => {
     const network = await getNetwork()
     const events = await getEvents()
 
-    // --- VALIDATION ---
+    // Validate route
     const isValid = validateRoute(route, game, network)
 
     if (!isValid) {
@@ -253,23 +261,43 @@ app.post('/api/games/:id/execute', async (req, res) => {
       return res.json({ valid: false, score: 0, steps: [] })
     }
 
-    // --- EXECUTION: apply a random event per segment ---
+    // Execution: apply a random event per segment
     let coins = 20
     const steps = []
+    let availableEvents = [...events]
 
     for (let i = 0; i < route.length - 1; i++) {
-      const event = events[Math.floor(Math.random() * events.length)]
-      coins += event.effect
-      const remaining = Math.max(0, coins)  // floor at 0 only for storage
+      if (availableEvents.length === 0) {
+        return res.status(400).json({ error: 'Not enough events for this route' })
+      }
 
-      await saveGameAction(game.game_id, i + 1, route[i], route[i + 1], event.event_id, remaining)
+      const randomIndex = Math.floor(Math.random() * availableEvents.length)
+      const event = availableEvents[randomIndex]
+
+      // remove event so it cannot be chosen again in this game
+      availableEvents.splice(randomIndex, 1)
+
+      coins += event.effect
+      const remaining = Math.max(0, coins)
+
+      await saveGameAction(
+          game.game_id,
+          i + 1,
+          route[i],
+          route[i + 1],
+          event.event_id,
+          remaining
+      )
 
       steps.push({
         step: i + 1,
         from_station_id: route[i],
         to_station_id: route[i + 1],
-        event: { description: event.event_description, effect: event.effect },
-        coins_after: coins   // send real value so frontend can show negative before flooring
+        event: {
+          description: event.event_description,
+          effect: event.effect
+        },
+        coins_after: remaining
       })
     }
 

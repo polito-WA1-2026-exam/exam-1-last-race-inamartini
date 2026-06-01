@@ -7,13 +7,11 @@ const db = new sqlite3.Database("last-race.sqlite", (err) => {
 });
 
 
-// USERS
-/** Finds a user in the database, verifies password and return if correct
- *
- * @param username username of the user
- * @param password password of the user
- * @returns {Promise<unknown>} user if password is correct
- */
+/* USERS */
+
+// check if a user login is correct
+// fetches user by username, then uses crypto.script to hash the submitted password with the stored salt and compares
+// to the stored hash using timingSafeEqual (prevents timing attacks). Returns user object if correct, false otherwise.
 export const getUser = (username, password) => {
     return new Promise((resolve, reject) => {
         const sql = "SELECT * FROM user WHERE username = ?";
@@ -40,6 +38,9 @@ export const getUser = (username, password) => {
     });
 };
 
+// create user
+// generate a random 16-byte salt, hashes the password with it using scrypt, then inserts the username, email, hashed
+// password and salt into the database. Returns the new user's id.
 export const createUser = (username, email, password) => {
     return new Promise((resolve, reject) => {
         const salt = crypto.randomBytes(16).toString("hex");
@@ -60,7 +61,10 @@ export const createUser = (username, email, password) => {
     });
 };
 
-// NETWORK
+/* NETWORK */
+
+// Runs three queries in one using Promise.all: station, segment and line+line_station. Then groups the line rows into
+// a structured object where each line has a stations array. Returns {stations, segments, lines}.
 export const getNetwork = () => {
     return new Promise((resolve, reject) => {
         const stations = new Promise((res, rej) => {
@@ -98,7 +102,10 @@ export const getNetwork = () => {
     })
 }
 
-// GAMES
+/* GAMES */
+
+// create a new game
+// inserts a new game row with the user_id and the assigned start/end stations. Returns the new game_id.
 export const createGame = (user_id, start_station_id, destination_station_id) => {
     return new Promise((resolve, reject) => {
         db.run(
@@ -109,6 +116,8 @@ export const createGame = (user_id, start_station_id, destination_station_id) =>
     })
 }
 
+// get an existing game
+// fetches a single game by id
 export const getGame = (game_id) => {
     return new Promise((resolve, reject) => {
         db.get("SELECT * FROM game WHERE game_id = ?", [Number(game_id)], (err, row) => {
@@ -117,6 +126,8 @@ export const getGame = (game_id) => {
     })
 }
 
+// update game status
+// update a game's status from 'planning' to 'finished' and the final score when the game ends.
 export const updateGameStatus = (game_id, status, score) => {
     return new Promise((resolve, reject) => {
         db.run(
@@ -127,6 +138,9 @@ export const updateGameStatus = (game_id, status, score) => {
     })
 }
 
+// register actions between stations
+// inserts one row per step in the game, recording the stations the user traveled between, which event occurd, and
+// how many cons are left after that step.
 export const saveGameAction = (game_id, step_number, from_station_id, to_station_id, event_id, remaining_coins) => {
     return new Promise((resolve, reject) => {
         db.run(
@@ -137,12 +151,20 @@ export const saveGameAction = (game_id, step_number, from_station_id, to_station
     })
 }
 
+/* EVENTS */
+
+// fetches all events from the database. Used during execution to pick an event for each segment.
 export const getEvents = () => {
     return new Promise((resolve, reject) => {
         db.all("SELECT * FROM event", [], (err, rows) => err ? reject(err) : resolve(rows))
     })
 }
 
+/* RANKING */
+
+// get best game (with the highest number of coins) for each user
+// joins game and user, groups by user, takes the max score per user and takes the best score (descending)
+// Only counts games with status = 'finished'. Gives one row per user showing their personal best score.
 export const getRanking = () => {
     return new Promise((resolve, reject) => {
         db.all(`
