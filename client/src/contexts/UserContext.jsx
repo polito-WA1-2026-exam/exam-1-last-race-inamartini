@@ -1,22 +1,5 @@
-import {createContext, useState, useEffect} from 'react'
-import { getSessionUser } from '../api/auth.js'
+import React from "react"
 
-const UserContext = createContext(null)
+const UserContext = React.createContext()
 
-export function UserProvider({ children }) {
-    const [user, setUser] = useState(null)
-
-    useEffect(() => {
-        getSessionUser()
-            .then(u => { if (u) setUser(u) })
-            .catch(() => {})
-    }, [])
-
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            {children}
-        </UserContext.Provider>
-    )
-}
-
-export { UserContext }
+export default UserContext

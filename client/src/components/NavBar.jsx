@@ -14,11 +14,11 @@ function NavBar({ user, onLogout }) {
         <nav className="navbar">
             <Link to="/" className="navbar-brand">🚇 Last Race</Link>
             <div className="navbar-links">
-                <Link to="/ranking">Ranking</Link>
                 <Link to="/instructions">Game Instructions</Link>
-                {user ? (
+                {user.id ? (
                     <>
-                        <span className="navbar-user"> {user.username}</span>
+                        <Link to="/ranking">Ranking</Link>
+                        <span className="navbar-user">{user.username}</span>
                         <Link to="/game" className="btn btn-primary">Play</Link>
                         <button className="btn btn-secondary" onClick={handleLogout}>Logout</button>
                     </>

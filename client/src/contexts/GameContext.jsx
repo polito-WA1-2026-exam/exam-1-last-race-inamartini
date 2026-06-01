@@ -1,7 +1,21 @@
 import {createContext, useState, useEffect, useRef} from 'react'
-import {startGame, executeGame, getNetwork} from '../api/API.js'
+import {startGame, executeGame, getNetwork} from '../api/api.js'
 
-const GameContext = createContext(null)
+const GameContext = createContext({
+    phase: 'setup',
+    setPhase: () => {},
+    network: null,
+    game: null,
+    route: [],
+    setRoute: () => {},
+    result: null,
+    error: '',
+    loading: false,
+    timeLeft: 90,
+    handleStartPlanning: () => {},
+    handleSubmitRoute: () => {},
+    handleRestart: () => {}
+})
 
 export function GameProvider({ children }) {
     const [phase, setPhase]     = useState('setup')
@@ -26,27 +40,7 @@ export function GameProvider({ children }) {
             .catch(() => setError('Could not load network.'))
     }, [])
 
-    // timer — only runs during planning phase
-    useEffect(() => {
-        if (phase !== 'planning') return
-
-        setTimeLeft(90)
-
-        const interval = setInterval(() => {
-            setTimeLeft(t => {
-                if (t <= 1) {
-                    clearInterval(interval)
-                    submitRoute(routeRef.current, gameRef.current)  // auto-submit with whatever route exists
-                    return 0
-                }
-                return t - 1
-            })
-        }, 1000)
-
-        return () => clearInterval(interval)   // cleanup if user submits early or phase changes
-    }, [phase])
-
-    // extracted so both manual submit and timer can call the same logic
+// extracted so both manual submit and timer can call the same logic
     const submitRoute = async (currentRoute, currentGame) => {
         setError('')
         setLoading(true)
@@ -61,6 +55,24 @@ export function GameProvider({ children }) {
         }
     }
 
+// timer — only runs during planning phase
+    useEffect(() => {
+        if (phase !== 'planning') return
+
+        const interval = setInterval(() => {
+            setTimeLeft(t => {
+                if (t <= 1) {
+                    clearInterval(interval)
+                    submitRoute(routeRef.current, gameRef.current)
+                    return 0
+                }
+                return t - 1
+            })
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [phase])
+
     const handleStartPlanning = async () => {
         setError('')
         setLoading(true)
@@ -68,6 +80,7 @@ export function GameProvider({ children }) {
             const g = await startGame()
             setGame(g)
             setRoute([g.start_station.station_id])
+            setTimeLeft(90)
             setPhase('planning')
         } catch {
             setError('Failed to start game.')

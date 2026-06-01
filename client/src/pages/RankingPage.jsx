@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UserContext } from '../contexts/UserContext.jsx'
-import { getRanking } from '../api/API.js'
+import UserContext from "../contexts/UserContext"
+import { getRanking } from '../api/api.js'
 
 function RankingPage() {
-    const { user } = useContext(UserContext)
+    const user = useContext(UserContext)
     const navigate = useNavigate()
     const [ranking, setRanking] = useState([])
     const [loading, setLoading] = useState(true)
