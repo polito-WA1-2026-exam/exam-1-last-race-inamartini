@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import coin from "../assets/coin.png";
+import PageComponent from "./PageContent.jsx";
 
 function ExecutionPhase({ result, network, onDone }) {
     const [stepIndex, setStepIndex] = useState(0)
@@ -7,12 +9,11 @@ function ExecutionPhase({ result, network, onDone }) {
 
     if (!result.valid) {
         return (
-            <div>
-                <h1>Invalid Route</h1>
+            <PageComponent title="Executing Route">
                 <p>Your route was invalid or incomplete. You lose all 20 coins.</p>
                 <p className="score-display">Final score: <strong>0</strong> coins</p>
                 <button className="btn btn-primary" onClick={onDone}>See Result</button>
-            </div>
+            </PageComponent>
         )
     }
 
@@ -20,8 +21,7 @@ function ExecutionPhase({ result, network, onDone }) {
     const isLast = stepIndex === result.steps.length - 1
 
     return (
-        <div>
-            <h1>Executing Route</h1>
+        <PageComponent title="Executing Route">
             <p>Step {stepIndex + 1} of {result.steps.length}</p>
 
             <div className="step-card">
@@ -36,7 +36,11 @@ function ExecutionPhase({ result, network, onDone }) {
                         ({currentStep.event.effect >= 0 ? '+' : ''}{currentStep.event.effect} coins)
                     </span>
                 </p>
-                <p>💰 Coins after this step: <strong>{currentStep.coins_after}</strong></p>
+                <p><img
+                    src={coin}
+                    alt="Coin icon"
+                    className="coin-icon"
+                /> Coins after this step: <strong>{currentStep.coins_after}</strong></p>
             </div>
 
             <button
@@ -46,7 +50,7 @@ function ExecutionPhase({ result, network, onDone }) {
             >
                 {isLast ? 'See final result →' : 'Next step →'}
             </button>
-        </div>
+        </PageComponent>
     )
 }
 

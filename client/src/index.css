@@ -225,13 +225,17 @@ main {
 .planning-map-container {
   display: flex;
   justify-content: center;
-
   margin: 2rem 0;
 }
 
 .planning-map {
   max-width: 80%;
   height: auto;
+}
+
+.coin-icon {
+  width: 1.2rem;
+  transform: translateY(2px);
 }
 
 /* Content */
