@@ -47,7 +47,12 @@ export function GameProvider({ children }) {
         try {
             const res = await executeGame(currentGame.game_id, currentRoute)
             setResult(res)
-            setPhase('execution')
+
+            if (res.valid) {
+                setPhase('execution')
+            } else {
+                setPhase('result')
+            }
         } catch {
             setError('Failed to submit route.')
         } finally {
