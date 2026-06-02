@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {login, logout} from '../api/auth.js'
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 
 function LoginForm({ onLogin, navigate }) {
     const [username, setUsername] = useState('')

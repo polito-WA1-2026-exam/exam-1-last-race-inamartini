@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router'
 import { logout } from '../api/auth.js'
 import profile from "../assets/profile.png"
 import metro from "../assets/metro_icon.png"

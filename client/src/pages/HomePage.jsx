@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import metro from "../assets/metro_figure.png";
 
 function HomePage({ user }) {
