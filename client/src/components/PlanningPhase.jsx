@@ -24,6 +24,16 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
 
     const stationName = (id) => network.stations.find(s => s.station_id === id)?.station_name ?? id
 
+    const usedSegments = new Set()
+
+    for (let i = 0; i < route.length - 1; i++) {
+        const a = route[i]
+        const b = route[i + 1]
+
+        usedSegments.add(`${a}-${b}`)
+        usedSegments.add(`${b}-${a}`)
+    }
+
     return (
         <div>
             <h1>Plan Your Route</h1>
@@ -70,7 +80,11 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
 
             <h2>Choose next segment</h2>
             <ul className="segment-list">
-                {network.segments.map(seg => (
+                {network.segments
+                    .filter(seg =>
+                        !usedSegments.has(`${seg.station_1_id}-${seg.station_2_id}`)
+                    )
+                    .map(seg => (
                     <li key={seg.segment_id}>
                         <button className="segment-link" onClick={() => addSegment(seg)}>
                             {stationName(seg.station_1_id)} ↔ {stationName(seg.station_2_id)}
