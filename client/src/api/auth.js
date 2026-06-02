@@ -22,13 +22,19 @@ async function logout()  {
 }
 
 async function checkSession() {
-    const response = await fetch(`${SERVER}/api/sessions/current`, {
-        credentials: "include"
-    })
-    if (response.ok) {
-        return await response.json()
-    } else {
-        return null
+    try {
+        const response = await fetch(`${SERVER}/api/sessions/current`, {
+            credentials: "include"
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error("Session check failed:", err);
+        return null;
     }
 }
 
