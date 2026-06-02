@@ -1,4 +1,8 @@
 import metroMap2 from "../assets/metro.png"
+import start from "../assets/metro_icon.png";
+import end from "../assets/filag_pink.png";
+import timer from "../assets/timer.png";
+
 
 function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, timeLeft }) {
     const lastStation = route[route.length - 1]
@@ -25,16 +29,33 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
             <h1>Plan Your Route</h1>
 
             <div className={`timer ${timeLeft <= 10 ? 'timer-urgent' : ''}`}>
-                ⏱ {timeLeft}s remaining
+                <img
+                    src={timer}
+                    alt="Timer icon"
+                    className="start-end-icon"
+                /> {timeLeft}s remaining
             </div>
 
             <div className="assignment-box">
-                <p>🚉 <strong>Start:</strong> {game.start_station.station_name}</p>
-                <p>🏁 <strong>Destination:</strong> {game.destination_station.station_name}</p>
+                <p> <img
+                    src={start}
+                    alt="Start icon"
+                    className="start-end-icon"
+                /> <strong>Start:</strong> {game.start_station.station_name}</p>
+                <p> <img
+                    src={end}
+                    alt="End icon"
+                    className="start-end-icon"
+                /><strong>Destination:</strong> {game.destination_station.station_name}</p>
             </div>
 
-            <img src={metroMap2} alt="Metro map without lines" style={{ maxWidth: "80%", height: "auto" }} />
-
+            <div className="planning-map-container">
+                <img
+                    src={metroMap2}
+                    alt="Metro map without lines"
+                    className="planning-map"
+                />
+            </div>
             <h2>Your route so far</h2>
             <div className="route-display">
                 {route.map((id, i) => (
