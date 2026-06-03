@@ -28,6 +28,16 @@ function RankingPage() {
             })
     }, [user, navigate])
 
+    const getRank = (index) => {
+        if (index === 0) return 1
+
+        if (ranking[index].best_score === ranking[index - 1].best_score) {
+            return getRank(index - 1)
+        }
+
+        return index + 1
+    }
+
     if (loading) return <div className="page"><p>Loading ranking…</p></div>
 
     return (
@@ -59,7 +69,7 @@ function RankingPage() {
                     {ranking.map((row, i) => (
                         <tr key={row.username}
                             className={row.username === user.username ? 'my-row' : ''}>
-                            <td>{i + 1}</td>
+                            <td>{getRank(i)}</td>
                             <td>{row.username} {row.username === user.username ? '(you)' : ''}</td>
                             <td>{row.best_score} coins</td>
                         </tr>
