@@ -7,16 +7,6 @@ function ExecutionPhase({ result, network, onDone }) {
 
     const stationName = (id) => network.stations.find(s => s.station_id === id)?.station_name ?? id
 
-    if (!result.valid) {
-        return (
-            <PageComponent title="Executing Route">
-                <p>Your route was invalid or incomplete. You lose all 20 coins.</p>
-                <p className="score-display">Final score: <strong>0</strong> coins</p>
-                <button className="btn btn-primary" onClick={onDone}>See Result</button>
-            </PageComponent>
-        )
-    }
-
     const currentStep = result.steps[stepIndex]
     const isLast = stepIndex === result.steps.length - 1
 

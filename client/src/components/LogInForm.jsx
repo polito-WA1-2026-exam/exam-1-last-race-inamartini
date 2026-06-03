@@ -1,21 +1,25 @@
-import {useEffect, useState} from 'react'
-import {login, logout} from '../api/auth.js'
-import {useNavigate} from "react-router";
+import {useState} from 'react'
+import {login} from '../api/auth.js'
 
 function LoginForm({ onLogin, navigate }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError]       = useState('')
+    const [loading, setLoading] = useState(false)
 
+    // runs when the form is submitted
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault() // prevent default browser submission
         setError('')
+        setLoading(true)
         try {
-            const user = await login(username, password)
-            onLogin(user)
-            navigate('/')
+            const user = await login(username, password) // calls login from auth.js
+            onLogin(user) // success: update parents state
+            navigate('/') // navigate to home page
         } catch {
             setError('Invalid username or password.')
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -29,24 +33,11 @@ function LoginForm({ onLogin, navigate }) {
             <label>Password
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
             </label>
-            <button type="submit" className="btn btn-primary">Login</button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+            </button>
         </form>
     )
 }
 
-function Logout(props) {
-    const navigate = useNavigate()
-
-    useEffect( ()=>{
-        logout().then( () =>
-        {
-            props.doLogin({ id: undefined, email: undefined, name: undefined })
-            navigate('/')
-        } )
-    }, [] )
-
-    return "Logging out..."
-
-}
-
-export {LoginForm, Logout}
+export {LoginForm}

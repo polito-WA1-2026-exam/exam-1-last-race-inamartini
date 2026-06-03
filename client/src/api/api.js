@@ -1,5 +1,7 @@
 const SERVER = 'http://localhost:3001'
 
+// GET /api/network
+// fetches the metro network data, credentials included
 async function getNetwork() {
     try {
         const res = await fetch(`${SERVER}/api/network`, { credentials: 'include' })
@@ -15,6 +17,9 @@ async function getNetwork() {
     }
 }
 
+// POST /api/games
+// creates a new game session on the server, credentials included
+// returns the new game data, including game_id
 async function startGame() {
     try {
         const res = await fetch(`${SERVER}/api/games`, {
@@ -34,6 +39,9 @@ async function startGame() {
 
 }
 
+// POST /api/games/:id/execute
+// submits the chosen route for the user, post with a JSON containing the route, the server
+// evaluates it and returns the result
 async function executeGame(gameId, route) {
     try {
         const res = await fetch(`${SERVER}/api/games/${gameId}/execute`, {
@@ -54,6 +62,8 @@ async function executeGame(gameId, route) {
     }
 }
 
+// GET /api/ranking
+// fetches the leaderboard, credentials included so the users own score can be highlighted
 async function getRanking() {
     try {
         const res = await fetch(`${SERVER}/api/ranking`, {

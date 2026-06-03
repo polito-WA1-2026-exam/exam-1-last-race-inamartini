@@ -7,6 +7,10 @@ import timer from "../assets/timer.png";
 function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, timeLeft }) {
     const lastStation = route[route.length - 1]
 
+    // when the player clicks a segment, this figures out which direction they're travelling.
+    // If the last station in the route matches one end of the segment, it appends the other end.
+    // If neither end matches (disconnected segment), it appends both stations.
+    // This allows building a connected path.
     const addSegment = (seg) => {
         if (seg.station_1_id === lastStation) {
             setRoute(r => [...r, seg.station_2_id])
@@ -17,15 +21,19 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
         }
     }
 
+    // removes the last segment from the route, but won't go below 1 station
     const removeLast = () => {
         if (route.length <= 1) return
         setRoute(r => r.slice(0, -1))
     }
 
+    // looks up station name by id from network.stations
     const stationName = (id) => network.stations.find(s => s.station_id === id)?.station_name ?? id
 
+    // create a list of used segments
     const usedSegments = new Set()
 
+    // add used segments to the list, preventing the user from reusing old segments
     for (let i = 0; i < route.length - 1; i++) {
         const a = route[i]
         const b = route[i + 1]

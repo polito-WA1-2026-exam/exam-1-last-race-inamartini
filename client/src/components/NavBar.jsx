@@ -6,10 +6,11 @@ import metro from "../assets/metro_icon.png"
 function NavBar({ user, onLogout }) {
     const navigate = useNavigate()
 
+    // calls lougout() from auth.js to destroy the session on the server
     const handleLogout = async () => {
         await logout()
-        onLogout()
-        navigate('/')
+        onLogout() // clear the user state
+        navigate('/') // go to home page
     }
 
     return (
@@ -22,7 +23,7 @@ function NavBar({ user, onLogout }) {
                 Last Race</Link>
             <div className="navbar-links">
                 <Link to="/instructions">Game Instructions</Link>
-                {user.id ? (
+                {user.id ? ( // only shown if logged in
                     <>
                         <Link to="/ranking">Ranking</Link>
                         <div className="profile-group">
@@ -36,7 +37,7 @@ function NavBar({ user, onLogout }) {
                         <Link to="/game" className="btn btn-primary">Play</Link>
                         <button className="btn btn-secondary" onClick={handleLogout}>Logout</button>
                     </>
-                ) : (
+                ) : ( // shown if the user is logged out
                     <Link to="/login" className="btn btn-primary">Login</Link>
                 )}
             </div>
