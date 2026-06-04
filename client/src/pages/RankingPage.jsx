@@ -12,6 +12,7 @@ function RankingPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError]     = useState('')
 
+    // check if logged in and load ranking
     useEffect(() => {
         if (!user) {
             navigate('/login')
@@ -26,8 +27,10 @@ function RankingPage() {
                 setError('Could not load ranking.')
                 setLoading(false)
             })
-    }, [user, navigate])
+    }, [user, navigate]) // runs again if user or navigate change
 
+    // top player always ranki 1, if current player has the same score as previous player, they get
+    // the same ranking, otherwise normal ranking
     const getRank = (index) => {
         if (index === 0) return 1
 
@@ -38,6 +41,7 @@ function RankingPage() {
         return index + 1
     }
 
+    // waiting for the backend..
     if (loading) return <div className="page"><p>Loading ranking…</p></div>
 
     return (

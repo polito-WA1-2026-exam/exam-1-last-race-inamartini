@@ -3,12 +3,13 @@ import coin from "../assets/coin.png";
 import PageComponent from "./PageContent.jsx";
 
 function ExecutionPhase({ result, network, onDone }) {
-    const [stepIndex, setStepIndex] = useState(0)
 
-    const stationName = (id) => network.stations.find(s => s.station_id === id)?.station_name ?? id
+    const [stepIndex, setStepIndex] = useState(0) // tracks which step the user is watching, starts at 0
 
-    const currentStep = result.steps[stepIndex]
-    const isLast = stepIndex === result.steps.length - 1
+    const stationName = (id) => network.stations.find(s => s.station_id === id)?.station_name ?? id // looks up station name by id
+
+    const currentStep = result.steps[stepIndex] // store the current step
+    const isLast = stepIndex === result.steps.length - 1 // last step before resuls page
 
     return (
         <PageComponent title="Executing Route">

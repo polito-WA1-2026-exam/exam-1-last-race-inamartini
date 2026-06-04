@@ -16,7 +16,8 @@ function GamePage() {
         <div className="page">
             {error && <p className="error">{error}</p>}
             {phase === 'setup'     && <SetupPhase onReady={handleStartPlanning} loading={loading} />}
-            {phase === 'planning'  && <PlanningPhase network={network} game={game} route={route} setRoute={setRoute} onSubmit={handleSubmitRoute} loading={loading} timeLeft={timeLeft} />}
+            {phase === 'planning'  && <PlanningPhase network={network} game={game} route={route} setRoute={setRoute}
+                                                     onSubmit={handleSubmitRoute} loading={loading} timeLeft={timeLeft} />}
             {phase === 'execution' && <ExecutionPhase result={result} network={network} onDone={() => setPhase('result')} />}
             {phase === 'result'    && <ResultPhase result={result} onRestart={handleRestart} />}
         </div>
