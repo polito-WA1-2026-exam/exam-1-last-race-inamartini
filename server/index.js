@@ -23,7 +23,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions))
 
-// When a user logs in, the getUser function is called, if correct, the user is stored in the session
+// When a user logs in, the getUser function is called, if correct, the user is stored in the session.
 passport.use(new LocalStrategy(async function verify(username, password, cb) {
   const user = await getUser(username, password);
 
