@@ -79,6 +79,7 @@ function validateRoute(route, game, network) {
   }
 
   // find which lines serve each station
+  // ex. station 3 belongs to line 1 and 3
   const stationLines = {}
   for (const line of lines) {
     for (const ls of line.stations) {
@@ -98,10 +99,12 @@ function validateRoute(route, game, network) {
     // segment must exist
     if (!segmentSet.has(`${from}-${to}`)) return false
 
+    // all lines serving the next station
     const toLines = stationLines[to] ?? new Set()
 
     // find lines that connect from -> to (shared between both stations)
     const sharedLines = [...currentLines].filter(l => toLines.has(l))
+
     if (sharedLines.length === 0) {
       // no shared line: only valid if 'from' is an interchange (served by 2+ lines)
       // meaning the player changed lines here
@@ -114,13 +117,13 @@ function validateRoute(route, game, network) {
     }
   }
 
-  return true
+  return true // the route is valid
 }
 
 /* ROUTES */
 
 // POST /api/sessions
-// Interface sends username and password, handled by passport
+// Log in: Interface sends username and password, handled by passport
 app.post("/api/sessions", passport.authenticate("local"), function(req, res) {
   return res.status(201).json(req.user);
 });
@@ -171,12 +174,13 @@ app.get('/api/ranking', async (req, res) => {
 // start a new game, server picks start/destination
 app.post('/api/games', async (req, res) => {
   try {
+    // 1. loads metro network
     const network = await getNetwork()
     const { stations, segments } = network
 
-    // build adjacency list for BFS
+    // build adjacency list for BFS, sore connected stations
     const adj = {}
-    for (const s of stations) adj[s.station_id] = []
+    for (const s of stations) adj[s.station_id] = [] // initialize
     for (const seg of segments) {
       adj[seg.station_1_id].push(seg.station_2_id)
       adj[seg.station_2_id].push(seg.station_1_id)
@@ -184,13 +188,13 @@ app.post('/api/games', async (req, res) => {
 
     // BFS: returns shortest distance from start to all reachable stations
     const bfsDistances = (startId) => {
-      const dist = { [startId]: 0 }
+      const dist = { [startId]: 0 } // start has distance 0
       const queue = [startId]
-      while (queue.length) {
-        const curr = queue.shift()
-        for (const nb of adj[curr]) {
-          if (dist[nb] === undefined) {
-            dist[nb] = dist[curr] + 1
+      while (queue.length) { // while there are stations to visit
+        const curr = queue.shift() // remove first station
+        for (const nb of adj[curr]) { // visit all neighbors
+          if (dist[nb] === undefined) { // not been visited yest
+            dist[nb] = dist[curr] + 1 // set distance
             queue.push(nb)
           }
         }
@@ -198,21 +202,28 @@ app.post('/api/games', async (req, res) => {
       return dist
     }
 
-    // pick a random start, then a random destination at least 3 stops away
+    // 2. pick a random start, then a random destination at least 3 stops away
     let start, destination, attempts = 0
     do {
-      start = stations[Math.floor(Math.random() * stations.length)]
-      const distances = bfsDistances(start.station_id)
+      start = stations[Math.floor(Math.random() * stations.length)] // random start
+      const distances = bfsDistances(start.station_id) // calculate distances to stations
+
       const reachable = stations.filter(s =>
-          s.station_id !== start.station_id && (distances[s.station_id] ?? 0) >= 3
+          s.station_id !== start.station_id && (distances[s.station_id] ?? 0) >= 3 // more than 3 steps away
       )
-      if (reachable.length === 0) { attempts++; continue }
-      destination = reachable[Math.floor(Math.random() * reachable.length)]
-    } while (!destination && attempts < 20)
+
+      if (reachable.length === 0) { attempts++; continue } // if no stations are 3 stops away, start new attempt
+
+      destination = reachable[Math.floor(Math.random() * reachable.length)] // choose random valid destination
+
+    } while (!destination && attempts < 20) // continue until destination is found or 20 attempts
 
     if (!destination) return res.status(500).json({ error: 'Could not find valid start/destination pair' })
 
+    // 3. create a new game in database
     const game_id = await createGame(req.user.user_id, start.station_id, destination.station_id)
+
+    // 4. return new game information
     res.status(201).json({
       game_id,
       start_station: start,
@@ -228,10 +239,11 @@ app.post('/api/games', async (req, res) => {
 // Body: { route: [station_id, station_id, ...] }
 app.post('/api/games/:id/execute', async (req, res) => {
   try {
-    const game = await getGame(req.params.id)
+    const game = await getGame(req.params.id) // fetch game from database
     if (!game) return res.status(404).json({ error: 'Game not found' })
-    if (game.user_id !== req.user.user_id) return res.status(403).json({ error: 'Forbidden' })
-    if (game.status !== 'planning') return res.status(400).json({ error: 'Game already finished' })
+
+    if (game.user_id !== req.user.user_id) return res.status(403).json({ error: 'Forbidden' }) // cant execute another users game
+    if (game.status !== 'planning') return res.status(400).json({ error: 'Game already finished' }) // only games that are not finished
 
     const { route } = req.body  // array of station_ids in order
     const network = await getNetwork()
@@ -248,22 +260,26 @@ app.post('/api/games/:id/execute', async (req, res) => {
     // Execution: apply a random event per segment
     let coins = 20
     const steps = []
-    let availableEvents = [...events]
+    let availableEvents = [...events] // copies the event array
 
+    // loop through route segments
     for (let i = 0; i < route.length - 1; i++) {
       if (availableEvents.length === 0) {
         return res.status(400).json({ error: 'Not enough events for this route' })
       }
 
+      // pick a random event
       const randomIndex = Math.floor(Math.random() * availableEvents.length)
       const event = availableEvents[randomIndex]
 
       // remove event so it cannot be chosen again in this game
       availableEvents.splice(randomIndex, 1)
 
+      // adjust coins after event
       coins += event.effect
-      const remaining = Math.max(0, coins)
+      const remaining = Math.max(0, coins) // coins cant be negative
 
+      // save one step in the database
       await saveGameAction(
           game.game_id,
           i + 1,
@@ -273,6 +289,7 @@ app.post('/api/games/:id/execute', async (req, res) => {
           remaining
       )
 
+      // send to frontend
       steps.push({
         step: i + 1,
         from_station_id: route[i],
@@ -285,7 +302,9 @@ app.post('/api/games/:id/execute', async (req, res) => {
       })
     }
 
+    // calculate final score
     const finalScore = Math.max(0, coins)
+    // finish the game
     await updateGameStatus(game.game_id, 'finished', finalScore)
 
     res.json({ valid: true, score: finalScore, steps })
