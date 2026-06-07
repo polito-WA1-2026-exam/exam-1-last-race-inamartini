@@ -27,6 +27,10 @@
           "email": "test@mail.com"
 }
 ```
+- status codes: 
+  - `201 Created`
+
+
 - GET `/api/sessions/current`
   - response body: `{ user_id, username, email }`
 ```text
@@ -158,8 +162,11 @@ Login Page:
 ![LogIn page](/client/src/assets/login.png)
 
 Home Page:
+(not logged in)
 
 ![Home page](/client/src/assets/home.png)
+
+(logged in)
 ![Home page, logged in](/client/src/assets/home_login.png)
 
 Instructions page:
@@ -188,5 +195,6 @@ Rankings page:
 - username: `hannah`, password: `password`
 
 ## Use of AI Tools
-Briefly describe whether you used any AI tools (e.g., ChatGPT, GitHub Copilot, Claude) while working on this project, for which purposes (e.g., clarifying concepts, debugging, generating code), and how you verified or adapted their output.
-If you did not use any AI tools, simply state so.
+I used AI tools (chatGPT and Claude) to get at better understanding of the task and create subtasks based on the assignment. AI was
+also used for debugging and code verification as well as generating example code and discussing best practice
+theory for implementation.
