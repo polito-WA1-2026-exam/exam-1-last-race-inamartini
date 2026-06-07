@@ -28,10 +28,12 @@
 }
 ```
 - status codes: 
-  - `201 Created`
+  - `200 OK` - login successful
+  - `401 Unauthorized` - login successful
 
 
 - GET `/api/sessions/current`
+  - request body: None
   - response body: `{ user_id, username, email }`
 ```text
 {
@@ -40,23 +42,20 @@
           "email": "test@mail.com"
 }
 ```
+- status codes:
+  - `200 OK` - authenticated
+  - `401 Unauthorized` - user not authenticated
+
+
 - DELETE `/api/sessions/current`
-- POST `/api/users`
-  - request body: `{ username, email, password }`
-```text
-{
-  "username": "testuser",
-          "email": "test@mail.com",
-          "password": "password123"
-}
-```
-  - response body: `{ user_id }`
-```text
-{
-  "user_id": 2
-}
-```
+  - request body: None
+  - response body: None
+  - status codes:
+    - `200 OK` - logout successful
+    
+
 - GET `/api/network`
+  - request body: None
   - response body: `{ stations: [...], segments [...], lines [...] }`
 ```text
 {
@@ -65,7 +64,13 @@
           "lines": [...]
 }
 ```
+- status codes:
+  - `200 OK`
+  - `500 Internal Server Error`
+
+
 - GET `/api/ranking`
+  - request body: None
   - response body: `{ username, best_score }`
 ```text
 [
@@ -79,7 +84,15 @@
   }
 ]
 ```
+
+- status codes:
+  - `200 OK`
+  - `401 Unauthorized`
+  - `500 Internal Server Error`
+
+
 - POST `/api/games`
+  - request body: None
   - response body: `{ game_id, start_station: {station_id, station_name}, destination_station: {station_id, station_name}  }`
 ```text
 {
@@ -94,6 +107,13 @@
   }
 }
 ```
+
+- status codes:
+  - `200 OK`
+  - `401 Unauthorized`
+  - `500 Internal Server Error`
+
+
 - POST `/api/games/:id/execute`
   - request parameters: :id = game_id
   - request body: `{ route: [station_id, ...] }`
@@ -129,7 +149,13 @@
           "steps": []
 }
 ```
-
+- status codes:
+  - `200 OK` - route valid or invalid
+  - `400 Bad Request` - game already finished or not enough events
+  - `401 Unauthorized`
+  - `403 Forbidden` - game belongs to another user
+  - `404 Not Found` - game not found
+  - `500 Internal Server Error`
 
 ## Database Tables
 

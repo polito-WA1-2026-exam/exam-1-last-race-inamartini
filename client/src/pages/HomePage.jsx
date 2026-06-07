@@ -5,7 +5,7 @@ function HomePage({ user }) {
     return (
         <div className="home-page">
             <h1>Last Race</h1>
-            <p>Race through the underground network to reach your destination before time runs out.</p>
+            <p>Play a game to discover the lines through the underground metro system!</p>
             <div className="btn-container">
                 {user?.id
                     ? <Link to="/game" className="btn btn-primary">Start a new game</Link>
