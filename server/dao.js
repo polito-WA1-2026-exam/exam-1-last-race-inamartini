@@ -38,41 +38,22 @@ export const getUser = (username, password) => {
     });
 };
 
-// create user
-// generate a random 16-byte salt, hashes the password with it using scrypt, then inserts the username, email, hashed
-// password and salt into the database. Returns the new user's id.
-export const createUser = (username, email, password) => {
-    return new Promise((resolve, reject) => {
-        const salt = crypto.randomBytes(16).toString("hex");
-
-        crypto.scrypt(password, salt, 16, (err, hashedPassword) => {
-            if (err) return reject(err);
-
-            const sql = `
-                INSERT INTO user (username, email, password, salt)
-                VALUES (?, ?, ?, ?)
-            `;
-
-            db.run(sql, [username, email, hashedPassword.toString("hex"), salt], function(err) {
-                if (err) reject(err);
-                else resolve(this.lastID);
-            });
-        });
-    });
-};
-
 /* NETWORK */
 
+// create the metro network
 // Runs three queries in one using Promise.all: station, segment and line+line_station. Then groups the line rows into
 // a structured object where each line has a stations array. Returns {stations, segments, lines}.
 export const getNetwork = () => {
     return new Promise((resolve, reject) => {
+
         const stations = new Promise((res, rej) => {
             db.all("SELECT * FROM station", [], (err, rows) => err ? rej(err) : res(rows))
         })
+
         const segments = new Promise((res, rej) => {
             db.all("SELECT * FROM segment", [], (err, rows) => err ? rej(err) : res(rows))
         })
+
         const lines = new Promise((res, rej) => {
             db.all(`
         SELECT l.line_id, l.line_name, l.color, ls.station_id, ls.station_order
@@ -120,7 +101,7 @@ export const createGame = (user_id, start_station_id, destination_station_id) =>
 // fetches a single game by id
 export const getGame = (game_id) => {
     return new Promise((resolve, reject) => {
-        db.get("SELECT * FROM game WHERE game_id = ?", [Number(game_id)], (err, row) => {
+        db.get("SELECT * FROM game WHERE game_id = ?", [game_id], (err, row) => {
             err ? reject(err) : resolve(row)
         })
     })

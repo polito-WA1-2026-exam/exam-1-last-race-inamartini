@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { getUser, createUser, getNetwork, createGame, getGame, updateGameStatus, saveGameAction, getEvents, getRanking } from './dao.js'
+import { getUser, getNetwork, createGame, getGame, updateGameStatus, saveGameAction, getEvents, getRanking } from './dao.js'
 
 
 import passport from 'passport';
@@ -141,22 +141,6 @@ app.delete("/api/sessions/current", (req, res) => {
     res.end();
   });
 });
-
-// POST /api/users
-// register a new user
-app.post('/api/users', async (req, res) => {
-  const { username, email, password } = req.body
-  if (!username || !email || !password)
-    return res.status(400).json({ error: 'Missing fields' })
-  try {
-    const id = await createUser(username, email, password)
-    res.status(201).json({ user_id: id })
-  } catch (err) {
-    if (err.message.includes('UNIQUE'))
-      return res.status(409).json({ error: 'Username or email already taken' })
-    res.status(500).json({ error: 'Server error' })
-  }
-})
 
 // GET /api/network
 // fetch stations, segments and lines
