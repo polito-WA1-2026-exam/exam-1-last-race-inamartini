@@ -92,6 +92,11 @@ function PlanningPhase({ network, game, route, setRoute, onSubmit, loading, time
                     .filter(seg =>
                         !usedSegments.has(`${seg.station_1_id}-${seg.station_2_id}`)
                     )
+                    .sort((a, b) =>
+                        stationName(a.station_1_id).localeCompare(
+                            stationName(b.station_1_id)
+                        )
+                    )
                     .map(seg => (
                     <li key={seg.segment_id}>
                         <button className="segment-link" onClick={() => addSegment(seg)}>
